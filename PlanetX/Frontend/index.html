@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PlanetX | Exoplanet Detection</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- BACKGROUND -->
+    <div class="background-overlay"></div>
+
+    <!-- HEADER -->
+    <header class="header" id="home">
+
+        <a href="#home" class="logo">
+            <img
+                src="Assets/logo.png"
+                alt="PlanetX logo"
+                onerror="this.style.display='none'"
+            >
+
+            <span>PLANET<span class="accent">X</span></span>
+        </a>
+
+        <nav>
+            <a href="#analyzer">Analyzer</a>
+            <a href="#bls">BLS Analysis</a>
+            <a href="#results">Results</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            SYSTEM READY
+        </div>
+
+    </header>
+
+
+    <!-- HERO -->
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+                    NASA SPACE APPS CHALLENGE PROJECT
+                </div>
+
+                <h1>
+                    Explore the <span>unknown.</span>
+                </h1>
+
+                <p>
+                    Discover distant worlds through the light of their stars.
+                    PlanetX analyzes stellar light curves to search for
+                    possible exoplanet transit signals.
+                </p>
+
+                <a href="#analyzer" class="primary-button">
+                    Start analysis
+                    <span>→</span>
+                </a>
+
+            </div>
+
+            <div class="hero-decoration">
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+                <div class="planet"></div>
+            </div>
+
+        </section>
+
+
+        <!-- ANALYZER -->
+        <section class="section" id="analyzer">
+
+            <div class="section-heading">
+                <div class="section-number">01 / DATA INPUT</div>
+
+                <h2>Upload your observation</h2>
+
+                <p>
+                    Provide a stellar light curve to begin the analysis.
+                </p>
+            </div>
+
+
+            <div class="panel upload-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <h3>Observation parameters</h3>
+                        <p>Enter the information required for analysis.</p>
+                    </div>
+
+                    <span class="step-label">INPUT</span>
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="starId">
+                            Star ID / KIC ID
+                            <span class="optional">OPTIONAL</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="starId"
+                            placeholder="Example: 11446443"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="timeSystem">
+                            Time format
+                        </label>
+
+                        <select id="timeSystem">
+                            <option value="JD">JD (Julian Date)</option>
+                        </select>
+
+                        <small>
+                            The current backend expects time values in JD.
+                            Do not mix JD, BKJD and BTJD.
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+                    <label>Light curve file</label>
+
+                    <label for="fileInput" class="upload-area">
+
+                        <div class="upload-icon">↑</div>
+
+                        <strong>Choose a CSV file</strong>
+
+                        <span>
+                            or drag and drop your file here
+                        </span>
+
+                        <small>
+                            Required columns: time, flux
+                        </small>
+
+                        <input
+                            type="file"
+                            id="fileInput"
+                            accept=".csv,text/csv"
+                            hidden
+                        >
+
+                    </label>
+
+                    <div id="fileName" class="file-name">
+                        No file selected
+                    </div>
+                </div>
+
+
+                <div class="data-note">
+                    <span>ⓘ</span>
+
+                    <p>
+                        Your CSV must contain two numerical columns:
+                        <strong>time</strong> and <strong>flux</strong>.
+                        The BLS algorithm will estimate the possible
+                        transit period, duration and depth.
+                    </p>
+                </div>
+
+
+                <button id="analyzeButton" class="primary-button analyze-button" disabled>
+                    Analyze light curve
+                    <span>→</span>
+                </button>
+
+                <div id="statusMessage" class="status-message">
+                    Waiting for observation data...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BLS -->
+        <section class="section" id="bls">
+
+            <div class="section-heading">
+                <div class="section-number">02 / PERIODICITY SEARCH</div>
+
+                <h2>Box Least Squares analysis</h2>
+
+                <p>
+                    BLS searches for periodic decreases in stellar brightness
+                    that may indicate a planetary transit.
+                </p>
+            </div>
+
+
+            <div class="panel chart-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <h3>BLS periodogram</h3>
+                        <p>Period search visualization</p>
+                    </div>
+
+                    <span class="chart-badge">BLS</span>
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="blsChart"></canvas>
+
+                    <div id="chartPlaceholder" class="chart-placeholder">
+                        <div class="chart-placeholder-icon">⌁</div>
+
+                        <strong>Awaiting BLS analysis</strong>
+
+                        <span>
+                            The periodogram will appear when the backend
+                            provides the BLS period and power values.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="bls-metrics">
+
+                    <div class="metric">
+                        <span>BEST PERIOD</span>
+                        <strong id="periodValue">—</strong>
+                        <small>days</small>
+                    </div>
+
+                    <div class="metric">
+                        <span>TRANSIT DURATION</span>
+                        <strong id="durationValue">—</strong>
+                        <small>days</small>
+                    </div>
+
+                    <div class="metric">
+                        <span>TRANSIT DEPTH</span>
+                        <strong id="depthValue">—</strong>
+                        <small>relative flux</small>
+                    </div>
+
+                    <div class="metric">
+                        <span>SIGNAL SNR</span>
+                        <strong id="snrValue">—</strong>
+                        <small>signal-to-noise</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DETECTION RESULT -->
+        <section class="section" id="results">
+
+            <div class="section-heading">
+                <div class="section-number">03 / DETECTION</div>
+
+                <h2>Detection result</h2>
+
+                <p>
+                    The result of the periodic transit search.
+                </p>
+            </div>
+
+
+            <div class="panel result-panel">
+
+                <div class="result-icon" id="resultIcon">✧</div>
+
+                <div class="result-content">
+
+                    <div class="result-label">BLS DETECTION STATUS</div>
+
+                    <h3 id="resultTitle">
+                        Awaiting analysis
+                    </h3>
+
+                    <p id="resultDescription">
+                        Upload a light curve to start searching
+                        for transit-like signals.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="science-note">
+                <strong>Scientific note</strong>
+
+                <p>
+                    A periodic transit-like signal is not proof of an
+                    exoplanet. Other astronomical phenomena, including
+                    eclipsing binary stars, can produce similar signals.
+                    Further validation is required.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- CNN -->
+        <section class="section" id="cnn">
+
+            <div class="section-heading">
+                <div class="section-number">04 / NEURAL NETWORK</div>
+
+                <h2>AI classification</h2>
+
+                <p>
+                    The CNN evaluates the transit signal and estimates
+                    whether it resembles a confirmed exoplanet signal
+                    or a false positive.
+                </p>
+            </div>
+
+
+            <div class="panel cnn-panel">
+
+                <div class="cnn-header">
+
+                    <div>
+                        <h3>PlanetX CNN</h3>
+                        <p>Convolutional Neural Network</p>
+                    </div>
+
+                    <span class="model-status" id="modelStatus">
+                        MODEL NOT CONNECTED
+                    </span>
+
+                </div>
+
+
+                <div id="cnnPlaceholder" class="cnn-placeholder">
+
+                    <div class="cnn-icon">✧</div>
+
+                    <strong>Neural network is waiting</strong>
+
+                    <p>
+                        The trained CNN model will be connected here
+                        after its training is complete.
+                    </p>
+
+                </div>
+
+
+                <div id="cnnResults" class="cnn-results hidden">
+
+                    <div class="prediction">
+
+                        <span>CONFIRMED</span>
+
+                        <strong id="confirmedScore">—</strong>
+
+                        <div class="progress-track">
+                            <div id="confirmedBar" class="progress-fill"></div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="prediction">
+
+                        <span>FALSE POSITIVE</span>
+
+                        <strong id="falsePositiveScore">—</strong>
+
+                        <div class="progress-track">
+                            <div id="falsePositiveBar" class="progress-fill"></div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="prediction-result">
+                        <span>MODEL CLASSIFICATION</span>
+                        <strong id="cnnPrediction">—</strong>
+                    </div>
+
+                    <p class="cnn-disclaimer">
+                        These percentages represent model scores,
+                        not guaranteed probabilities that a planet exists.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="science-note">
+                <strong>How does the CNN work?</strong>
+
+                <p>
+                    The neural network analyzes the shape of a normalized
+                    transit light curve. It compares the signal with
+                    patterns learned during training and classifies it
+                    as CONFIRMED or FALSE POSITIVE.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+        <section class="section about-section" id="about">
+
+            <div class="section-number">05 / ABOUT PLANETX</div>
+
+            <h2>Searching for worlds beyond our Solar System.</h2>
+
+            <p>
+                PlanetX combines astronomical data analysis and
+                machine learning to support the search for exoplanet
+                transit signals.
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="footer-logo">PLANET<span>X</span></div>
+
+        <p>NASA SPACE APPS CHALLENGE</p>
+
+        <a href="#home">Back to top ↑</a>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
