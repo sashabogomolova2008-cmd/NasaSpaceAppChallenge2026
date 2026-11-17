@@ -1,4 +1,4 @@
-PLEASE DOWNLOAD ZIP FILE FROM RELIZE V2.0
+PLEASE DOWNLOAD ZIP FILE FROM RELIASE V2.0
 # PlanetX 🚀
 
 **AI-powered exoplanet detection using BLS and Convolutional Neural Networks (CNN).**
